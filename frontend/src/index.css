@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #FDFCF8;
+  --gold: #D4AF37;
+  --black: #1A1A1A;
+  --pink: #F8E1E7;
+  color-scheme: light;
+}
+
+@layer base {
+  html {
+    background-color: var(--cream);
+  }
+  
+  body {
+    @apply bg-infinito-cream text-infinito-black antialiased;
+    background-color: var(--cream) !important;
+    color: var(--black) !important;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+.btn-primary {
+  @apply bg-infinito-gold text-white px-6 py-2 rounded-full hover:bg-opacity-90 transition-all duration-300;
+}
+
+.btn-outline {
+  @apply border border-infinito-gold text-infinito-gold px-6 py-2 rounded-full hover:bg-infinito-gold hover:text-white transition-all duration-300;
+}
