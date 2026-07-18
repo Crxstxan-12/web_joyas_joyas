@@ -9,16 +9,41 @@ const Cart = () => {
   const { cart, cartTotal, removeFromCart, updateQuantity, clearCart } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [customer, setCustomer] = useState({
+    full_name: '',
+    email: '',
+    phone: '',
+    address: '',
+  });
+  const [formError, setFormError] = useState('');
+
+  const handleCustomerChange = (e) => {
+    const { name, value } = e.target;
+    setCustomer((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const isCustomerValid = () => {
+    const { full_name, email, phone, address } = customer;
+    if (!full_name.trim() || !email.trim() || !phone.trim() || !address.trim()) {
+      return false;
+    }
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
   const handleCheckout = async () => {
+    if (!isCustomerValid()) {
+      setFormError('Completa todos tus datos con un email válido antes de continuar.');
+      return;
+    }
+    setFormError('');
     setIsProcessing(true);
-    
-    // Preparar datos para Django
+
+    // Preparar datos para Django (datos reales ingresados por el cliente)
     const orderData = {
-      full_name: "Cliente Prueba", 
-      email: "prueba@cliente.cl",
-      phone: "+56912345678",
-      address: "Dirección de prueba 123",
+      full_name: customer.full_name.trim(),
+      email: customer.email.trim(),
+      phone: customer.phone.trim(),
+      address: customer.address.trim(),
       total_amount: cartTotal,
       items: cart.map(item => ({
         product: item.id,
@@ -186,6 +211,45 @@ const Cart = () => {
                   <span>Total</span>
                   <span>${cartTotal.toLocaleString('es-CL')}</span>
                 </div>
+              </div>
+
+              <div className="space-y-3 mb-6 text-left">
+                <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">Datos de envío</p>
+                <input
+                  type="text"
+                  name="full_name"
+                  placeholder="Nombre completo"
+                  value={customer.full_name}
+                  onChange={handleCustomerChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-infinito-gold text-sm"
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={customer.email}
+                  onChange={handleCustomerChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-infinito-gold text-sm"
+                />
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Teléfono (ej: +56912345678)"
+                  value={customer.phone}
+                  onChange={handleCustomerChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-infinito-gold text-sm"
+                />
+                <textarea
+                  name="address"
+                  placeholder="Dirección de despacho"
+                  value={customer.address}
+                  onChange={handleCustomerChange}
+                  rows={2}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-infinito-gold text-sm resize-none"
+                />
+                {formError && (
+                  <p className="text-red-500 text-xs">{formError}</p>
+                )}
               </div>
 
               <div className="space-y-4">

@@ -1,4 +1,4 @@
-from django.db import models, transaction
+from django.db import transaction
 from rest_framework import serializers
 from .models import Category, Product, Order, OrderItem
 
@@ -50,15 +50,13 @@ class OrderSerializer(serializers.ModelSerializer):
 
         validated_data['total_amount'] = total
 
+        # El stock NO se descuenta acá. Solo se descuenta cuando Mercado
+        # Pago confirma el pago (ver _confirm_order_payment en views.py).
+        # Así una orden "pending" que nunca se paga no deja el stock en
+        # cero para otros clientes.
         with transaction.atomic():
             order = Order.objects.create(**validated_data)
             for item_data in items_data:
-                product = item_data['product']
-                quantity = item_data['quantity']
                 OrderItem.objects.create(order=order, **item_data)
-                # Atomic stock decrement
-                Product.objects.filter(pk=product.pk).update(
-                    stock=models.F('stock') - quantity
-                )
 
         return order
