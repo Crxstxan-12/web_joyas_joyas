@@ -51,19 +51,21 @@ class OrderPermission(permissions.BasePermission):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
+    # Orden explícito: la paginación (DRF) necesita un queryset ordenado para
+    # no duplicar ni omitir resultados entre páginas.
+    queryset = Category.objects.all().order_by('id')
     serializer_class = CategorySerializer
     permission_classes = [ReadOnlyOrAdmin]
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by('id')
     serializer_class = ProductSerializer
     permission_classes = [ReadOnlyOrAdmin]
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
+    queryset = Order.objects.all().order_by('-created_at')
     serializer_class = OrderSerializer
     permission_classes = [OrderPermission]
 

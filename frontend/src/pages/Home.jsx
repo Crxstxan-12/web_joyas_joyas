@@ -1,14 +1,14 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, ShieldCheck, Truck } from 'lucide-react';
+import { getImageUrl } from '../api';
 
 const Home = () => {
   const categories = [
-    { name: 'Aros', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=400', path: '/catalogo?cat=aros' },
-    { name: 'Collares', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=400', path: '/catalogo?cat=collares' },
-    { name: 'Pulseras', image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=400', path: '/catalogo?cat=pulseras' },
-    { name: 'Anillos', image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=400', path: '/catalogo?cat=anillos' },
+    { name: 'Aros', image: getImageUrl('/media/products/aros/Aros racimo.jpeg'), path: '/catalogo?cat=aros' },
+    { name: 'Collares', image: getImageUrl('/media/products/collar/Collar Flor.jpeg'), path: '/catalogo?cat=collares' },
+    { name: 'Pulseras', image: getImageUrl('/media/products/pulsera/WhatsApp Image 2026-05-05 at 19.22.17 (1).jpeg'), path: '/catalogo?cat=pulseras' },
+    { name: 'Conjuntos', image: getImageUrl('/media/products/collar/Collar conjunto perla.jpeg'), path: '/catalogo?cat=conjuntos' },
   ];
 
   return (

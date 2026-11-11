@@ -1,6 +1,6 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Sparkles, Shield, MapPin } from 'lucide-react';
+import { Heart, Sparkles } from 'lucide-react';
+import { getImageUrl } from '../api';
 
 const About = () => {
   return (
@@ -29,7 +29,7 @@ const About = () => {
             
             <div className="relative z-10 group">
               <img 
-                src="http://localhost:8000/media/products/safiro_cadena.jpeg" 
+                src={getImageUrl('/media/products/collar/Collar corazon rosa.jpeg')} 
                 alt="Joyas Infinito Zafiro" 
                 className="rounded-3xl shadow-2xl transition-transform duration-700 group-hover:scale-105"
               />

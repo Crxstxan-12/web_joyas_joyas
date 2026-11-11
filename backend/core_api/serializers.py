@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import Category, Product, Order, OrderItem
 
 
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -34,7 +35,15 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = ['total_amount', 'status']
 
     def create(self, validated_data):
-        items_data = validated_data.pop('items')
+        items_data = validated_data.pop('items', None)
+
+        # Antes, si el cliente enviaba una orden sin productos, esto lanzaba
+        # un KeyError -> error 500. Ahora devolvemos un error de validación
+        # claro (400).
+        if not items_data:
+            raise serializers.ValidationError({
+                'items': 'La orden debe incluir al menos un producto.'
+            })
 
         # Validate stock and recalculate prices from DB — never trust client prices
         total = 0

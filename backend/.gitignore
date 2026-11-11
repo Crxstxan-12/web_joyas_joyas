@@ -2,9 +2,10 @@
 *.pyc
 __pycache__/
 db.sqlite3
-media/
 static/
 venv/
 *.log
 .DS_Store
-.env.example
+
+# Nota: .env.example y media/ (imágenes de productos) SÍ se versionan,
+# porque el ejemplo guía el despliegue y las imágenes viajan con el backend.

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Heart, Search, Filter } from 'lucide-react';
+import { ShoppingCart, Heart, Search } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { fetchProducts } from '../api';
+import { fetchProducts, getImageUrl } from '../api';
 
 const Catalog = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,11 +23,11 @@ const Catalog = () => {
     loadProducts();
   }, []);
 
-  const categories = ['todos', 'aros', 'collares', 'pulseras', 'anillos'];
+  const categories = ['todos', 'aros', 'collares', 'pulseras', 'conjuntos'];
 
   const filteredProducts = products.filter(p => {
-    const matchesCategory = category === 'todos' || p.category_name.toLowerCase() === category.toLowerCase();
-    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = category === 'todos' || (p.category_name || '').toLowerCase() === category.toLowerCase();
+    const matchesSearch = (p.name || '').toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -39,12 +39,6 @@ const Catalog = () => {
   const handleCategoryChange = (cat) => {
     setCategory(cat);
     setSearchParams(cat === 'todos' ? {} : { cat });
-  };
-
-  const getImageUrl = (url) => {
-    if (!url) return 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=400';
-    if (url.startsWith('http')) return url;
-    return `http://localhost:8000${url}`;
   };
 
   if (loading) {

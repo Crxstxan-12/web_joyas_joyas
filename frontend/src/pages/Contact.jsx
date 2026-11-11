@@ -1,7 +1,36 @@
-import React from 'react';
-import { Instagram, MessageCircle, Mail, Clock, MapPin, Send } from 'lucide-react';
+import { useState } from 'react';
+import { Instagram, MessageCircle, Clock, MapPin, Send } from 'lucide-react';
+
+// Número de WhatsApp de la tienda (código país + número, sin + ni espacios).
+const WHATSAPP_NUMBER = '56952196382';
 
 const Contact = () => {
+  const [form, setForm] = useState({
+    nombre: '',
+    email: '',
+    asunto: 'Consulta General',
+    mensaje: '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const text =
+      `¡Hola Infinito Joyas!\n\n` +
+      `Nombre: ${form.nombre}\n` +
+      `Email: ${form.email}\n` +
+      `Asunto: ${form.asunto}\n\n` +
+      `${form.mensaje}`;
+    window.open(
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`,
+      '_blank'
+    );
+  };
+
   return (
     <div className="bg-infinito-cream min-h-screen py-16">
       <div className="container mx-auto px-4">
@@ -23,7 +52,14 @@ const Contact = () => {
                 <div>
                   <h4 className="font-bold text-infinito-black">WhatsApp</h4>
                   <p className="text-gray-600">+56 9 52196382</p>
-                  <a href="#" className="text-infinito-gold text-sm font-medium hover:underline">Escríbenos ahora</a>
+                  <a
+                    href="https://wa.me/56952196382"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-infinito-gold text-sm font-medium hover:underline"
+                  >
+                    Escríbenos ahora
+                  </a>
                 </div>
               </div>
 
@@ -84,12 +120,16 @@ const Contact = () => {
           {/* Contact Form */}
           <div className="bg-white p-10 rounded-3xl shadow-xl">
             <h3 className="text-2xl font-serif text-infinito-black mb-8">Envíanos un mensaje</h3>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
                   <input 
                     type="text" 
+                    name="nombre"
+                    value={form.nombre}
+                    onChange={handleChange}
+                    required
                     className="w-full px-4 py-3 rounded-xl border border-gray-100 bg-infinito-cream focus:outline-none focus:ring-2 focus:ring-infinito-gold/20"
                     placeholder="Tu nombre"
                   />
@@ -99,6 +139,10 @@ const Contact = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                   <input 
                     type="email" 
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    required
                     className="w-full px-4 py-3 rounded-xl border border-gray-100 bg-infinito-cream focus:outline-none focus:ring-2 focus:ring-infinito-gold/20"
                     placeholder="tu@email.com"
                   />
@@ -107,7 +151,12 @@ const Contact = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Asunto</label>
-                <select className="w-full px-4 py-3 rounded-xl border border-gray-100 bg-infinito-cream focus:outline-none focus:ring-2 focus:ring-infinito-gold/20">
+                <select
+                  name="asunto"
+                  value={form.asunto}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-100 bg-infinito-cream focus:outline-none focus:ring-2 focus:ring-infinito-gold/20"
+                >
                   <option>Consulta General</option>
                   <option>Estado de Pedido</option>
                   <option>Personalizaciones</option>
@@ -119,12 +168,16 @@ const Contact = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Mensaje</label>
                 <textarea 
                   rows="5"
+                  name="mensaje"
+                  value={form.mensaje}
+                  onChange={handleChange}
+                  required
                   className="w-full px-4 py-3 rounded-xl border border-gray-100 bg-infinito-cream focus:outline-none focus:ring-2 focus:ring-infinito-gold/20"
                   placeholder="¿En qué podemos ayudarte?"
                 ></textarea>
               </div>
 
-              <button className="w-full btn-primary py-4 flex items-center justify-center gap-2 shadow-lg shadow-infinito-gold/20">
+              <button type="submit" className="w-full btn-primary py-4 flex items-center justify-center gap-2 shadow-lg shadow-infinito-gold/20">
                 Enviar Mensaje <Send size={18} />
               </button>
             </form>

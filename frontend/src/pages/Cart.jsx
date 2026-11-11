@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { createOrder, getPaymentUrl } from '../api';
+import { motion } from 'framer-motion';
+import { createOrder, getPaymentUrl, getImageUrl } from '../api';
+
+// Número de WhatsApp de la tienda (código país + número, sin + ni espacios).
+const WHATSAPP_NUMBER = '56952196382';
 
 const Cart = () => {
   const { cart, cartTotal, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -74,7 +77,7 @@ const Cart = () => {
         `\n\n*Total: $${cartTotal.toLocaleString('es-CL')}*` +
         `\n\nPor favor, confírmenme los pasos para el pago.`;
       
-      const whatsappUrl = `https://wa.me/56912345678?text=${encodeURIComponent(message)}`;
+      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
       setTimeout(() => {
         setIsProcessing(false);
@@ -147,7 +150,7 @@ const Cart = () => {
                 className="bg-white p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row items-center gap-6"
               >
                 <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover" />
                 </div>
                 
                 <div className="flex-grow text-center sm:text-left">
