@@ -12,10 +12,11 @@ Plataforma digital moderna y funcional para **Infinito Joyas**, un emprendimient
 - **Context API**: Gestión del estado del carrito de compras.
 
 ### Backend
-- **Django + Django REST Framework**: API robusta y segura.
-- **MySQL**: Base de datos para productos, categorías y pedidos.
+- **Node.js + Express**: API REST rápida y segura.
+- **Prisma ORM**: Acceso type-safe a la base de datos.
+- **PostgreSQL**: Base de datos para productos, categorías y pedidos.
 - **Mercado Pago SDK**: Integración de pagos automáticos con tarjeta.
-- **Python Environ**: Gestión segura de credenciales y variables de entorno.
+- **dotenv**: Gestión segura de credenciales y variables de entorno.
 
 ---
 
@@ -24,7 +25,13 @@ Plataforma digital moderna y funcional para **Infinito Joyas**, un emprendimient
 ```text
 infinito-joyas/
 ├── frontend/        # Código de la interfaz (React)
-└── backend/         # Código del servidor y API (Django)
+└── backend/         # Código del servidor y API (Node.js + Express + Prisma)
+    ├── prisma/      # Schema y migraciones de la base de datos
+    ├── src/
+    │   ├── routes/  # Endpoints (categorías, productos, órdenes, Mercado Pago)
+    │   ├── middleware/
+    │   └── utils/
+    └── media/       # Imágenes de los productos
 ```
 
 ---
@@ -32,35 +39,32 @@ infinito-joyas/
 ## 🛠️ Configuración e Instalación
 
 ### 1. Requisitos Previos
-- Python 3.x instalado.
-- Node.js y npm instalados.
-- Servidor MySQL activo.
+- **Node.js 18+** y npm instalados.
+- **PostgreSQL** activo (local o en la nube).
 
-### 2. Configuración del Backend (Django)
+### 2. Configuración del Backend (Node.js + Express)
 1. Entra a la carpeta backend:
    ```bash
    cd backend
    ```
-2. Crea y activa el entorno virtual:
+2. Instala las dependencias:
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate
+   npm install
    ```
-3. Instala las dependencias:
+3. Configura las variables de entorno:
+   - Copia `.env.example` a `.env`.
+   - Ajusta `DATABASE_URL` (PostgreSQL) y, si usas pagos, `MERCADO_PAGO_ACCESS_TOKEN`.
+4. Aplica las migraciones de la base de datos:
    ```bash
-   pip install -r requirements.txt
+   npx prisma migrate deploy
    ```
-4. Configura las variables de entorno:
-   - Crea un archivo `.env` basado en el ejemplo proporcionado.
-   - Configura tu `DATABASE_URL` de MySQL y tu `MERCADO_PAGO_ACCESS_TOKEN`.
-5. Ejecuta las migraciones y crea un superusuario:
+5. Carga el catálogo inicial (una sola vez):
    ```bash
-   python manage.py migrate
-   python manage.py createsuperuser
+   npm run seed
    ```
 6. Inicia el servidor:
    ```bash
-   python manage.py runserver
+   npm run dev
    ```
 
 ### 3. Configuración del Frontend (React)
@@ -72,7 +76,8 @@ infinito-joyas/
    ```bash
    npm install
    ```
-3. Inicia el servidor de desarrollo:
+3. Configura `.env` (copia de `.env.example`) con `VITE_API_URL`.
+4. Inicia el servidor de desarrollo:
    ```bash
    npm run dev
    ```
@@ -86,29 +91,30 @@ Arquitectura: **Frontend en Vercel** + **Backend en Railway/Render** + **Postgre
 ### 1. Backend (Railway o Render)
 1. Crea un servicio apuntando a la carpeta `backend/` del repositorio.
    - Build command: `./build.sh`
-   - Start command: `gunicorn core.wsgi:application --bind 0.0.0.0:$PORT`
+   - Start command: `node src/index.js`
    (En Railway basta el `Procfile` incluido.)
 2. Agrega una base de datos **PostgreSQL** y copia su `DATABASE_URL`.
 3. Define las variables de entorno (ver `backend/.env.example`):
-   - `SECRET_KEY` → genera una con `python -c "import secrets; print(secrets.token_urlsafe(50))"`
-   - `DEBUG=False`
-   - `DATABASE_URL=postgres://...`
-   - `ALLOWED_HOSTS=tu-backend.up.railway.app`
-   - `CORS_ALLOWED_ORIGINS=https://tu-frontend.vercel.app`
-   - `CSRF_TRUSTED_ORIGINS=https://tu-backend.up.railway.app`
+   - `SECRET_KEY` → genera una con `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`
+   - `NODE_ENV=production`
+   - `DATABASE_URL=postgresql://...`
+   - `CORS_ORIGINS=https://tu-frontend.vercel.app`
    - `FRONTEND_URL=https://tu-frontend.vercel.app`
    - `BACKEND_URL=https://tu-backend.up.railway.app`
    - `MERCADO_PAGO_ACCESS_TOKEN` y `MERCADO_PAGO_WEBHOOK_SECRET` (si usas pagos)
-4. Carga el catálogo inicial (una sola vez): `python populate_products.py`
-5. Crea el superusuario del admin: `python manage.py createsuperuser`
+   - `ADMIN_API_KEY` (clave para operar el CRUD de administración)
+4. Carga el catálogo inicial (una sola vez): `npm run seed`
 
 > Las imágenes de los productos viven en `backend/media/` y se despliegan con el
-> proyecto (están versionadas en git). Si subes imágenes nuevas desde el admin en
-> un host con disco efímero, considera un almacenamiento externo (S3/Cloudinary).
+> proyecto (están versionadas en git). Si en el futuro subes imágenes desde un
+> panel, considera un almacenamiento externo (S3/Cloudinary), ya que el disco de
+> Railway/Render es efímero.
 
 ### 2. Frontend (Vercel)
-1. Importa el repositorio y configura el **Root Directory** como `frontend`.
-2. Agrega la variable de entorno `VITE_API_URL=https://tu-backend.up.railway.app/api`.
+1. Importa el repositorio y configura el **Root Directory** como `frontend`
+   (importante: si no, Vercel intentará construir el backend).
+2. Agrega la variable de entorno `VITE_API_URL=https://tu-backend.up.railway.app/api`
+   (debe terminar en `/api`).
 3. Deploy. El archivo `vercel.json` ya incluye el rewrite necesario para que las
    rutas de React Router (`/catalogo`, `/carrito`, etc.) funcionen al recargar.
 
@@ -116,10 +122,7 @@ Arquitectura: **Frontend en Vercel** + **Backend en Railway/Render** + **Postgre
 
 ## 📱 Visualización en Dispositivos Móviles
 Para revisar la página desde tu teléfono dentro de la misma red Wi-Fi:
-1. Inicia el backend permitiendo todas las IPs:
-   ```bash
-   python manage.py runserver 0.0.0.0:8000
-   ```
+1. Inicia el backend escuchando en todas las interfaces (por defecto ya lo hace en el puerto 8000).
 2. Inicia el frontend con el flag host:
    ```bash
    npm run dev -- --host

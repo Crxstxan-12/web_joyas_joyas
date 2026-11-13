@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @db.VarChar(100)
+  slug  String @unique @db.VarChar(100)
+
+  products Product[]
+
+  @@map("core_api_category")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(200)
+  description String   @default("")
+  price       Int // Pesos chilenos (sin decimales)
+  stock       Int      @default(0)
+  image       String?  @db.VarChar(255)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  items OrderItem[]
+
+  @@map("core_api_product")
+}
+
+model Order {
+  id           Int      @id @default(autoincrement())
+  full_name    String   @db.VarChar(200)
+  email        String   @db.VarChar(254)
+  phone        String   @db.VarChar(20)
+  address      String
+  total_amount Int
+  status       String   @default("pending") @db.VarChar(20)
+  payment_id   String?  @db.VarChar(100)
+  created_at   DateTime @default(now())
+
+  items OrderItem[]
+
+  @@map("core_api_order")
+}
+
+model OrderItem {
+  id       Int @id @default(autoincrement())
+  price    Int
+  quantity Int @default(1)
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("core_api_orderitem")
+}

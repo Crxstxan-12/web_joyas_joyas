@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String
+  slug  String @unique
+
+  products Product[]
+
+  @@map("core_api_category")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String   @default("")
+  price       Int
+  stock       Int      @default(0)
+  image       String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  items OrderItem[]
+
+  @@map("core_api_product")
+}
+
+model Order {
+  id           Int      @id @default(autoincrement())
+  full_name    String
+  email        String
+  phone        String
+  address      String
+  total_amount Int
+  status       String   @default("pending")
+  payment_id   String?
+  created_at   DateTime @default(now())
+
+  items OrderItem[]
+
+  @@map("core_api_order")
+}
+
+model OrderItem {
+  id       Int @id @default(autoincrement())
+  price    Int
+  quantity Int @default(1)
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("core_api_orderitem")
+}

@@ -41,7 +41,7 @@ const Cart = () => {
     setFormError('');
     setIsProcessing(true);
 
-    // Preparar datos para Django (datos reales ingresados por el cliente)
+    // Preparar datos para el backend (datos reales ingresados por el cliente)
     const orderData = {
       full_name: customer.full_name.trim(),
       email: customer.email.trim(),

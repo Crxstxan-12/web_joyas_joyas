@@ -1,11 +1,12 @@
+node_modules
 .env
-*.pyc
-__pycache__/
-db.sqlite3
-static/
-venv/
 *.log
-.DS_Store
+dev.db
+dev.db-journal
+dist
 
-# Nota: .env.example y media/ (imágenes de productos) SÍ se versionan,
-# porque el ejemplo guía el despliegue y las imágenes viajan con el backend.
+# Prisma
+prisma/migrations/dev.db*
+
+# Las imágenes de productos SÍ se versionan (necesarias en producción).
+# !media/
