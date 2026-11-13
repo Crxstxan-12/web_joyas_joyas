@@ -1,0 +1,28 @@
+# Dependencias
+node_modules/
+
+# Builds
+dist/
+build/
+
+# Entorno virtual de Python (ya no se usa: el backend es Node.js)
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Variables de entorno (los .env.example SÍ se versionan)
+.env
+.env.*
+!.env.example
+
+# Base de datos local
+*.db
+*.sqlite3
+
+# Sistema y editores
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.log
